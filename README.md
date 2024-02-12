@@ -5,5 +5,5 @@ Mazo ( matriz 10 X 4 de structs que marque carta y si se uso) HECHO
 Meza (Hacer Lista)
 
 Mano de jugador (vector de structs que marque si se uso o no)
-
-ASEGURARSE DE QUE CODIGO COMPILE EN SUS COMPUS ANTES DE GUARDAR 
+ 
+Asegurense de que el codigo compile en sus compus antes de guardar
