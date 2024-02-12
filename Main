@@ -1,10 +1,94 @@
 #include <iostream>
-#include <stdlib>
+#include <time.h>
 using namespace std;
-//hola;
-//hola;
-int main() {
+//STRUCTS
+struct sMazo{
+    short carta;
+    bool usado;
+};
 
 
-  return 0;
+//PROTOTIPOS
+void inicMazo(sMazo[][10]);
+void printMazo(sMazo[][10]); //(Mate Pirchi) Lo agregue porque quiza lo necesitemos para comprobar que todo ande bien
+short eligeCarta(sMazo[][10]);
+
+int main(){
+    sMazo mazo[4][10];
+
+    inicMazo(mazo);
+    cout << "Cartas Random sacadas: " << eligeCarta(mazo);
+    printMazo(mazo);
+
+
+
+    return 0;
+};
+
+// ---------------------------------------------------------------------------------------
+void inicMazo(sMazo mazo[][10]){
+    short i,
+          j;
+    for (i = 0; i < 4; i++){
+        for (j = 0; j < 10; j++){
+            if ( j < 7){
+                mazo[i][j].carta = j+1;
+                mazo[i][j].usado = false;
+            }
+            else{   // (Mate Pirchi) Hice esta division para que saltear los numeros 8 y 9, y aun asi usar los espacios 7 y 8 de la matriz
+            mazo[i][j].carta = j+3;
+            mazo[i][j].usado = false;
+            }
+        }
+    };
 }
+
+// ---------------------------------------------------------------------------------------
+short eligeCarta(sMazo mazo[][10]){
+    short posicCarta,
+          filaCarta,
+          colCarta;
+
+    srand (time(0));
+    posicCarta= rand()% 31;
+
+    filaCarta =(posicCarta/10);
+    colCarta = posicCarta-(filaCarta*10);
+
+    while (mazo[filaCarta][colCarta].usado){
+        colCarta++;
+        if (colCarta >= 10){
+            colCarta = 0;
+            filaCarta++;
+
+            if (filaCarta >= 4){
+                filaCarta = 0;
+            }
+        }
+    }
+
+    mazo[filaCarta][colCarta].usado = true;
+    return mazo[filaCarta][colCarta].carta;
+}
+
+// ---------------------------------------------------------------------------------------
+void printMazo(sMazo mazo[][10]){
+    short i,
+          j;
+
+    for (i = 0; i < 4; i++){
+        for (j = 0; j < 10; j++){
+            cout << mazo[i][j].carta << " ";
+        }
+        cout << endl;
+    }
+
+    cout << endl <<"Fue usado?" << endl;
+    for (i = 0; i < 4; i++){
+        for (j = 0; j < 10; j++){
+            cout <<j+1 + (i*10) << ") "<< mazo[i][j].usado << "  ";
+        }
+        cout << endl;
+    }
+}
+
