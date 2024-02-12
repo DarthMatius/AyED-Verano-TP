@@ -1,6 +1,6 @@
 Hacer para martes 13
 
-Mazo ( matriz 10 X 4 de structs que marque carta y si se uso)
+Mazo ( matriz 10 X 4 de structs que marque carta y si se uso) HECHO
 
 Meza (Hacer Lista)
 
