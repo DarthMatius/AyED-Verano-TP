@@ -6,4 +6,4 @@ Meza (Hacer Lista)
 
 Mano de jugador (vector de structs que marque si se uso o no)
 
-ASEGURARSE DE QUE CODIGO COMPILE ANTES DE GUARDAR
+ASEGURARSE DE QUE CODIGO COMPILE EN SUS COMPUS ANTES DE GUARDAR 
