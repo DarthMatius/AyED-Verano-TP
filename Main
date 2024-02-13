@@ -1,25 +1,53 @@
 #include <iostream>
 #include <time.h>
+#include <cstdlib>
 using namespace std;
 //STRUCTS
 struct sMazo{
     short carta;
     bool usado;
 };
+ struct sCarta{
+ 	short valor;
+ 	short palo;
+ 	short numRef;
+ };
+ struct Nodo{
+ 	sCarta info;
+ 	Nodo* sgt;
+ };
+
 
 
 //PROTOTIPOS
 void inicMazo(sMazo[][10]);
 void printMazo(sMazo[][10]); //(Mate Pirchi) Lo agregue porque quiza lo necesitemos para comprobar que todo ande bien
-short eligeCarta(sMazo[][10]);
+short eligeCarta(sMazo[][10],short&,short&,short&);
+void inicCJ(sCarta[]);
+void mostrarCJ(sCarta[]);
+void repartir(sMazo[][10],sCarta[],sCarta[],short&,short&,short&);
+
+
 
 int main(){
+	 short posicCarta,
+          filaCarta,
+          colCarta;
+	Nodo*Carta = NULL;
+	sCarta CJ1[3]; //cartasjugador1
+	sCarta CJ2[3];//cartasjugador2
+
     sMazo mazo[4][10];
-
+	
     inicMazo(mazo);
-    cout << "Cartas Random sacadas: " << eligeCarta(mazo);
+	inicCJ(CJ1);
+	inicCJ(CJ2);
+    //cout << "Cartas Random sacada: " << eligeCarta(mazo,posicCarta,filaCarta,colCarta)<< endl;
     printMazo(mazo);
-
+	repartir(mazo,CJ1,CJ2,posicCarta,filaCarta,colCarta);
+	mostrarCJ(CJ1);
+	mostrarCJ(CJ2);
+	  printMazo(mazo);
 
 
     return 0;
@@ -44,22 +72,24 @@ void inicMazo(sMazo mazo[][10]){
 }
 
 // ---------------------------------------------------------------------------------------
-short eligeCarta(sMazo mazo[][10]){
-    short posicCarta,
-          filaCarta,
-          colCarta;
+short eligeCarta(sMazo mazo[][10],short& posicCarta,short& filaCarta, short& colCarta){
 
-    srand (time(0));
-    posicCarta= rand()% 31;
-
-    filaCarta =(posicCarta/10);
-    colCarta = posicCarta-(filaCarta*10);
-
-    while (mazo[filaCarta][colCarta].usado){
-        colCarta++;
+ 	  srand(time(0));
+    posicCarta= rand()%30 + 1;
+    
+ 	 colCarta= rand()%10+1;
+     filaCarta= rand()%4;
+   /* filaCarta =(posicCarta/10);
+    colCarta = posicCarta-(filaCarta*10);*/
+	    while (mazo[filaCarta][colCarta].usado){
+        //colCarta++;
+         colCarta= rand()%10+1;
+   	  	filaCarta= rand()%4;
+       ;
         if (colCarta >= 10){
             colCarta = 0;
-            filaCarta++;
+            //filaCarta++;
+            filaCarta= rand()%4;
 
             if (filaCarta >= 4){
                 filaCarta = 0;
@@ -91,4 +121,132 @@ void printMazo(sMazo mazo[][10]){
         cout << endl;
     }
 }
+//-------------------------------------------------------------------------------------------------
+void repartir(sMazo mazo[][10],sCarta c1[], sCarta c2[],short&posicCarta,short& filaCarta, short& colCarta){
+	int i=0;
+	for(i; i<3 ; i++){
+	eligeCarta(mazo,posicCarta,filaCarta,colCarta);	
+	c1[i].numRef= mazo[filaCarta][colCarta].carta;
+	c1[i].palo = filaCarta;
+	c1[i].valor = colCarta+1;
+	
+	eligeCarta(mazo,posicCarta,filaCarta,colCarta);	
+	c2[i].numRef= mazo[filaCarta][colCarta].carta;
+	c2[i].palo = filaCarta;
+	c2[i].valor = colCarta+1;
+	
+	}
+}
+//----------------------------------------------------------------------------------------------------------
+void inicCJ(sCarta C[])
+{
+	int i=0;
+	for (i; i< 3; i++){
+		C[i].valor=0;
+		C[i].palo=0;
+		C[i].numRef=0;
+	}
+}
+void mostrarCJ(sCarta C[]){
+	int i=0;
+	for (i; i<3 ; i++){
+		cout<<"numRef  "<<C[i].numRef<< endl;
+		cout<<"palo"<<C[i].palo<< endl;
+	//	cout<<"valor"<<C[i].valor<< endl;
+	}
+}
+//hacer switch de los palos
 
+//------------------------------------------------------------------------------------------------------
+void InicioPartida(sMazo mazo[][10],sCarta c1[], sCarta c2[],short&posicCarta,short& filaCarta, short& colCarta,Nodo*& lista,sCarta info){
+int i
+sCarta CartaActual;
+eligeCarta(mazo,posicCarta,filaCarta,colCarta);	
+	CartaActual.numRef= mazo[filaCarta][colCarta].carta;
+	CartaActual.palo = filaCarta;
+	CartaActual.valor = colCarta+1;
+insertaPrimero(lista,info);//insertainicio	
+	/*	CartaActual.numRef= 0;
+		CartaActual.palo = 0;
+		CartaActual.valor = 0;	*/
+for (i; i<3 ; i++){
+		eligeCarta(mazo,posicCarta,filaCarta,colCarta);	//insertaordenado;
+		CartaActual.numRef= mazo[filaCarta][colCarta].carta;
+		CartaActual.palo = filaCarta;
+		CartaActual.valor = colCarta+1;
+		insertarOrdenado(lista,info);
+	/*	CartaActual.numRef= 0; 
+		CartaActual.palo = 0;
+		CartaActual.valor = 0;	*/
+}	
+//primera parte volcar datos del mazo en nodos y agregarlos a la lista	
+repartir(mazo,CJ1,CJ2,posicCarta,filaCarta,colCarta);//segunda parte utilizar la funcion repartir
+}
+
+
+//funciones básicas de listas
+
+Nodo* insertarAlFinal(int*& l, int x){
+ Nodo* nuevo = new Nodo();
+ nuevo->info = x;
+ nuevo->sig = NULL;
+ if( l==NULL ) {
+ l = nuevo; }
+ else {
+ Nodo* aux = l;
+ while(aux->sig!=NULL )
+ aux = aux->sig;
+
+ aux->sig = nuevo;
+ }
+return nuevo;
+
+Nodo * insertaPrimero(Nodo*& l, sCarta x)
+{
+ Nodo* p = new Nodo();
+ p ->info = x;
+ p->sgte = l;
+ l = p;
+ return; p
+}
+/*eliminarNodo elimina un nodo con un valor
+dado si lo encuentra*/
+void eliminarNodo(Nodo*& l, int v){
+ Nodo* actual = l;
+ Nodo* ant = NULL;
+ while( actual!=NULL && aux->info!=v ) {
+ ant = actual;
+ actual = actual->sig;
+ }
+ If(actual->info!=v return; //no lo encontro
+ if( ant!=NULL )//si no es el primer nodo
+ ant->sig = actual->sig;
+ else//si se elimina el primero
+ l = actual->sig;//actualiza puntero al inicio
+ delete actual;
+return;
+}
+//Insertar ordenado
+Nodo* insertarOrdenado(Nodo*& l, sCarta v){
+ Nodo* nuevo = new Nodo();
+ nuevo->info = v;
+ nuevo->sig = NULL;
+ Nodo* ant = NULL;
+ Nodo* actual = l;
+ while( actual!=NULL && aux->info<v ) {
+ ant = actual;
+ actual = actual->sig;
+ }
+ if( ant==NULL )
+ l = nuevo;
+ else
+ ant->sig = nuevo;
+ nuevo->sig = actual;
+ return nuevo;
+}
+//Version 2 Eliminando el nodo luego de mostrar
+void mostrar(Nodo* & l) {
+ while( l )
+ cout << pop(l) << endl;
+ return;
+}
