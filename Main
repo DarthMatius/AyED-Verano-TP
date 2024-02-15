@@ -2,7 +2,10 @@
 #include <iostream>
 #include <time.h>
 #include <stdlib.h>
+#include <cstring>
 using namespace std;
+typedef char str6[7];
+
 //STRUCTS
 struct sMazo{
     short carta;
@@ -10,7 +13,7 @@ struct sMazo{
 };
  struct sCarta{
  	short valor;
- 	short palo;
+ 	str6 palo;
  	short numRef;
  };
  struct Nodo{
@@ -25,6 +28,7 @@ void inicMazo(sMazo[][10]);
 void printMazo(sMazo[][10]);
 short eligeCarta(sMazo[][10],short&,short&,short&);
 void inicCJ(sCarta[]);
+void definePalo(short, str6);
 void mostrarCJ(sCarta[]);
 void repartir(sMazo[][10],sCarta[],sCarta[],short&,short&,short&);
 void InicioPartida(sMazo[][10], sCarta[], sCarta[], short&, short&, short&, Nodo*& );
@@ -37,6 +41,9 @@ int main(){
           colCarta;
 
 	Nodo*punteroListaCarta = NULL;
+	Nodo*punteroMazoSecJ1 = NULL;
+	Nodo*punteroMazoSecJ2 = NULL;
+	
 	sCarta CJ1[3]; //cartasjugador1
 	sCarta CJ2[3];//cartasjugador2
 
@@ -77,7 +84,6 @@ void inicMazo(sMazo mazo[][10]){
     };
 }
 
-// ---------------------------------------------------------------------------------------
 short eligeCarta(sMazo mazo[][10],short& posicCarta,short& filaCarta, short& colCarta){
 
  	  srand(time(0));
@@ -107,7 +113,6 @@ short eligeCarta(sMazo mazo[][10],short& posicCarta,short& filaCarta, short& col
     return mazo[filaCarta][colCarta].carta;
 }
 
-// ---------------------------------------------------------------------------------------
 void printMazo(sMazo mazo[][10]){
     short i,
           j;
@@ -127,34 +132,31 @@ void printMazo(sMazo mazo[][10]){
         cout << endl;
     }
 }
-//-------------------------------------------------------------------------------------------------
 
 void repartir(sMazo mazo[][10],sCarta c1[], sCarta c2[],short&posicCarta,short& filaCarta, short& colCarta){
 	int i=0;
 	for(i; i<3 ; i++){
-	eligeCarta(mazo,posicCarta,filaCarta,colCarta);
-	c1[i].numRef= mazo[filaCarta][colCarta].carta;
-	c1[i].palo = filaCarta;
-	c1[i].valor = colCarta+1;
+        eligeCarta(mazo,posicCarta,filaCarta,colCarta);
+        c1[i].numRef= mazo[filaCarta][colCarta].carta;
+        definePalo(filaCarta, c1[i].palo);
+        c1[i].valor = colCarta+1;
 
-	eligeCarta(mazo,posicCarta,filaCarta,colCarta);
-	c2[i].numRef= mazo[filaCarta][colCarta].carta;
-	c2[i].palo = filaCarta;
-	c2[i].valor = colCarta+1;
+	    eligeCarta(mazo,posicCarta,filaCarta,colCarta);
+    	c2[i].numRef= mazo[filaCarta][colCarta].carta;
+	    definePalo(filaCarta, c2[i].palo);
+    	c2[i].valor = colCarta+1;
 
 	}
 }
-//----------------------------------------------------------------------------------------------------------
 
 void inicCJ(sCarta C[]){
 	int i=0;
 	for (i; i< 3; i++){
 		C[i].valor=0;
-		C[i].palo=0;
+		strcpy(C[i].palo, "Vacio");
 		C[i].numRef=0;
 	}
 }
-//----------------------------------------------------------------------------------------------------------
 
 void mostrarCJ(sCarta C[]){
 	int i=0;
@@ -164,25 +166,40 @@ void mostrarCJ(sCarta C[]){
 	//	cout<<"valor"<<C[i].valor<< endl;
 	}
 }
-//hacer switch de los palos
 
-//------------------------------------------------------------------------------------------------------
+void definePalo(short palo, str6 paloCarta){ //Le das el numero de la FILA y la VARIABLE donde GUARDAR el nombre del palo
+
+    switch (palo){
+        case 0:
+            strcpy(paloCarta, "oro");
+            break;
+        case 1:
+            strcpy(paloCarta, "copa");
+            break;
+        case 2:
+            strcpy(paloCarta, "espada");
+            break;
+        case 3:
+            strcpy(paloCarta, "basto");
+            break;
+        default:
+            cout << "ERROR PALO INVALIDO, FILA NO ES NI 0, 1, 2 O 3";
+    }
+}
 
 void InicioPartida(sMazo mazo[][10],sCarta c1[], sCarta c2[],short&posicCarta,short& filaCarta, short& colCarta,Nodo*& punteroListaCarta){
  	 sCarta CartaActual;
-		for (int i=0; i<4 ; i++)
-		{
-		eligeCarta(mazo,posicCarta,filaCarta,colCarta);	
+    for (int i=0; i<4 ; i++){
+		eligeCarta(mazo,posicCarta,filaCarta,colCarta);
 		CartaActual.numRef= mazo[filaCarta][colCarta].carta;
-		CartaActual.palo = filaCarta;
+		definePalo(filaCarta, CartaActual.palo);
 		CartaActual.valor = colCarta+1;
 		insertarEnLista(punteroListaCarta,CartaActual);
-
-		}//primera parte volcar datos del mazo en nodos y agregarlos a la lista
-repartir(mazo,c1,c2,posicCarta,filaCarta,colCarta);//segunda parte utilizar la funcion repartir
+    }//primera parte volcar datos del mazo en nodos y agregarlos a la lista
+    repartir(mazo,c1,c2,posicCarta,filaCarta,colCarta);//segunda parte utilizar la funcion repartir
 }
-void insertarEnLista(Nodo *&punteroListaCarta, sCarta CartaActual)//insertaOrdenado
-{
+
+void insertarEnLista(Nodo *&punteroListaCarta, sCarta CartaActual){//insertaOrdenado
     Nodo *nuevo, *antecesor, *aux;
     nuevo = new Nodo;
     nuevo->dato = CartaActual;
@@ -197,8 +214,8 @@ void insertarEnLista(Nodo *&punteroListaCarta, sCarta CartaActual)//insertaOrden
     nuevo->siguiente = aux;
 
     if (aux != punteroListaCarta){
-    
-    
+
+
         antecesor->siguiente = nuevo;
     }
     else
@@ -207,12 +224,10 @@ void insertarEnLista(Nodo *&punteroListaCarta, sCarta CartaActual)//insertaOrden
     }
 }
 
-void mostrarListado(Nodo *punteroListaCarta)
-{
+void mostrarListado(Nodo *punteroListaCarta){
     Nodo *aux = punteroListaCarta;
 
-    while (aux != NULL)
-    {
+    while (aux != NULL){
         cout <<"valor "<< aux->dato.valor  ;
         cout << " palo " << aux-> dato.palo  ;
         cout << " Num Ref " << aux -> dato.numRef ;
@@ -220,6 +235,7 @@ void mostrarListado(Nodo *punteroListaCarta)
         aux = aux->siguiente;
     }
 }
+
 Nodo* buscarCarta(Nodo* punteroListaCarta, sCarta cartaBuscada) {
     Nodo* aux = punteroListaCarta;
 
@@ -287,6 +303,7 @@ Nodo* buscarInsertarCarta(Nodo*& punteroListaCarta, sCarta cartaBuscada) {
         return nuevo;
     }
 }
+
 
 
 
