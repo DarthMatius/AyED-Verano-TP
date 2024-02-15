@@ -34,6 +34,7 @@ void repartir(sMazo[][10],sCarta[],sCarta[],short&,short&,short&);
 void InicioPartida(sMazo[][10], sCarta[], sCarta[], short&, short&, short&, Nodo*& );
 void insertarEnLista(Nodo*&,sCarta);
 void mostrarListado(Nodo *);
+void  ordenarPorBurbuja(sCarta[], short);
 
 int main(){
 	short posicCarta,
@@ -147,6 +148,9 @@ void repartir(sMazo mazo[][10],sCarta c1[], sCarta c2[],short&posicCarta,short& 
     	c2[i].valor = colCarta+1;
 
 	}
+	ordenarPorBurbuja(c1,3);
+    ordenarPorBurbuja(c2,3);
+	
 }
 
 void inicCJ(sCarta C[]){
@@ -303,6 +307,34 @@ Nodo* buscarInsertarCarta(Nodo*& punteroListaCarta, sCarta cartaBuscada) {
         return nuevo;
     }
 }
+void Interfaz(){ //pasar por ref vector 
+	int posCarta;
+	char accion;
+	InicioPartida(mazo, CJ1, CJ2, posicCarta, filaCarta, colCarta, *&punteroListaCarta);	//mostrar mesa y vector jugador 1
+	mostrarListado(punteroListaCarta);
+	mostrarCJ(CJ1);
+	cout << "Seleccione una Carta segun la posicion" << endl;
+	cin >> posCarta;
+	cout << "¿Qué operacion desea realizar con esta carta?" <<endl;
+	cout << "Si desea levantar inserte A o si desea tirar la carta inserte B" << endl;
+	cin >> accion;
+	switch (accion){
+		case 'A': 	
+					break;
+		case 'B': 	insertarEnLista(punteroListaCarta,C1[posCarta-1]);
+					C1[posCarta-1].numRef=0;
+					break;
+		default: break;
+	}
+	// menu preguntando que va a hacer si levantar o tirar
+	// en caso de que levante debe elegir cartas con un menu que cierre cuantas cartas se levanta,  la condicion de que de 15 la suma de los valores de los nodo
+	// en caso de tirar invoca la funcion inserta nodo y agrega la carta sobre la mesa
+	//borrar todo en la pantalla
+	//mostrar mesa y v2
+	//ofrecer lo mismo para v2 
+	
+}*/
+
 
 
 
