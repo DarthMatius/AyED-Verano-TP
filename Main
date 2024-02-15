@@ -239,7 +239,6 @@ void mostrarListado(Nodo *punteroListaCarta){
         aux = aux->siguiente;
     }
 }
-
 Nodo* buscarCarta(Nodo* punteroListaCarta, sCarta cartaBuscada) {
     Nodo* aux = punteroListaCarta;
 
