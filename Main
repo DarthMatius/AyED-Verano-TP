@@ -1,3 +1,4 @@
+
 #include <iostream>
 #include <time.h>
 #include <stdlib.h>
@@ -13,8 +14,8 @@ struct sMazo{
  	short numRef;
  };
  struct Nodo{
- 	sCarta info;
- 	Nodo* sgt;
+ 	sCarta dato;
+ 	Nodo* siguiente;
  };
 
 
@@ -26,21 +27,16 @@ short eligeCarta(sMazo[][10],short&,short&,short&);
 void inicCJ(sCarta[]);
 void mostrarCJ(sCarta[]);
 void repartir(sMazo[][10],sCarta[],sCarta[],short&,short&,short&);
-void InicioPartida(sMazo[][10], sCarta[], sCarta[], short&, short&, short&, Nodo*& ,sCarta);
-Nodo* insertarAlFinal(int*&, int);
-Nodo* insertaPrimero(Nodo*&, sCarta);
-void eliminarNodo(Nodo*&, int);
-Nodo* insertarOrdenado(Nodo*&, sCarta);
-void mostrar(Nodo*&);
-
-
+void InicioPartida(sMazo[][10], sCarta[], sCarta[], short&, short&, short&, Nodo*& );
+void insertarEnLista(Nodo*&,sCarta);
+void mostrarListado(Nodo *);
 
 int main(){
 	short posicCarta,
           filaCarta,
           colCarta;
 
-	Nodo*Carta = NULL;
+	Nodo*punteroListaCarta = NULL;
 	sCarta CJ1[3]; //cartasjugador1
 	sCarta CJ2[3];//cartasjugador2
 
@@ -56,8 +52,9 @@ int main(){
 	mostrarCJ(CJ2);
     printMazo(mazo);
     cout << endl << endl << endl << endl;
-    InicioPartida(mazo, CJ1, CJ2, posicCarta, filaCarta, colCarta, Carta.sgt, Carta.info);
-
+    InicioPartida(mazo, CJ1, CJ2, posicCarta, filaCarta, colCarta, *&punteroListaCarta);
+    cout << "la mesa tiene " << endl;
+	mostrarListado(punteroListaCarta);
 
     return 0;
 };
@@ -171,113 +168,125 @@ void mostrarCJ(sCarta C[]){
 
 //------------------------------------------------------------------------------------------------------
 
-void InicioPartida(sMazo mazo[][10],sCarta c1[], sCarta c2[],short&posicCarta,short& filaCarta, short& colCarta,Nodo*& lista,sCarta info){
-    int i;
-    sCarta CartaActual;
-    eligeCarta(mazo,posicCarta,filaCarta,colCarta);
-    CartaActual.numRef= mazo[filaCarta][colCarta].carta;
-	CartaActual.palo = filaCarta;
-	CartaActual.valor = colCarta+1;
-    insertaPrimero(lista,info);//insertainicio
-	/*	CartaActual.numRef= 0;
-		CartaActual.palo = 0;
-		CartaActual.valor = 0;	*/
-    for (i; i<3 ; i++){
-		eligeCarta(mazo,posicCarta,filaCarta,colCarta);	//insertaordenado;
+void InicioPartida(sMazo mazo[][10],sCarta c1[], sCarta c2[],short&posicCarta,short& filaCarta, short& colCarta,Nodo*& punteroListaCarta){
+ 	 sCarta CartaActual;
+		for (int i=0; i<4 ; i++)
+		{
+		eligeCarta(mazo,posicCarta,filaCarta,colCarta);	
 		CartaActual.numRef= mazo[filaCarta][colCarta].carta;
 		CartaActual.palo = filaCarta;
 		CartaActual.valor = colCarta+1;
-		insertarOrdenado(lista,info);
-	/*	CartaActual.numRef= 0;
-		CartaActual.palo = 0;
-		CartaActual.valor = 0;	*/
-}
-//primera parte volcar datos del mazo en nodos y agregarlos a la lista
+		insertarEnLista(punteroListaCarta,CartaActual);
+
+		}//primera parte volcar datos del mazo en nodos y agregarlos a la lista
 repartir(mazo,c1,c2,posicCarta,filaCarta,colCarta);//segunda parte utilizar la funcion repartir
 }
+void insertarEnLista(Nodo *&punteroListaCarta, sCarta CartaActual)//insertaOrdenado
+{
+    Nodo *nuevo, *antecesor, *aux;
+    nuevo = new Nodo;
+    nuevo->dato = CartaActual;
+    aux = punteroListaCarta;
 
-//------------------------------------------------------------------------------------------------------
-//funciones básicas de listas
+    while (aux != NULL && aux->dato.valor < CartaActual.valor)
+    {
+        antecesor = aux;
+        aux = aux->siguiente;
+    }
 
-Nodo* insertarAlFinal(Nodo*& l, sCarta x){
+    nuevo->siguiente = aux;
 
- Nodo* nuevo = new Nodo();
- nuevo->info = x;
- nuevo->sgt = NULL;
- if( l==NULL ) {
- l = nuevo; }
- else {
- Nodo* aux = l;
- while(aux->sgt!=NULL )
- aux = aux->sgt;
-
- aux->sgt = nuevo;
- }
-return nuevo;
+    if (aux != punteroListaCarta){
+    
+    
+        antecesor->siguiente = nuevo;
+    }
+    else
+    {
+        punteroListaCarta = nuevo;
+    }
 }
 
-//------------------------------------------------------------------------------------------------------
-Nodo * insertaPrimero(Nodo*& l, sCarta x){
- Nodo* p = new Nodo();
- p ->info = x;
- p->sgt = l;
- l = p;
- return p;
+void mostrarListado(Nodo *punteroListaCarta)
+{
+    Nodo *aux = punteroListaCarta;
+
+    while (aux != NULL)
+    {
+        cout <<"valor "<< aux->dato.valor  ;
+        cout << " palo " << aux-> dato.palo  ;
+        cout << " Num Ref " << aux -> dato.numRef ;
+        cout << endl;
+        aux = aux->siguiente;
+    }
+}
+Nodo* buscarCarta(Nodo* punteroListaCarta, sCarta cartaBuscada) {
+    Nodo* aux = punteroListaCarta;
+
+    while (aux != NULL && aux->dato.numRef != cartaBuscada.numRef) {
+        aux = aux->siguiente;
+    }
+
+    return aux;
 }
 
-//------------------------------------------------------------------------------------------------------
+Nodo* buscarMejorCarta(Nodo* punteroListaCarta, sCarta cartaBuscada) {
+    Nodo* aux = punteroListaCarta;
 
-/*eliminarNodo elimina un nodo con un valor dado si lo encuentra*/
-void eliminarNodo(Nodo*& l, sCarta v){
-    Nodo* actual = l;
-    Nodo* ant = NULL;
-
-    while( actual!=NULL && (actual->info.numRef != v.numRef) ) {
-        ant = actual;
-        actual = actual->sgt;
-    }
-    if(actual->info.numRef != v.numRef ){ //no lo encontro
-        cout << endl <<"ERROR No se encontro la Carta" << endl;
-        return;
+    while (aux != NULL && !(aux->dato.numRef < cartaBuscada.numRef)) {
+        aux = aux->siguiente;
     }
 
-    if( ant != NULL ){//si no es el primer nodo
-        ant->sgt = actual->sgt;
-    }
-    else{//si se elimina el primero
-        l = actual->sgt;//actualiza puntero al inicio
-    }
-
-    delete actual;
-    return;
+    return aux;
 }
 
-//------------------------------------------------------------------------------------------------------
+bool eliminarCarta(Nodo*& punteroListaCarta, sCarta cartaBuscada) {
+    Nodo* aux, *antecesor;
+    aux = punteroListaCarta;
 
-//Insertar ordenado
-Nodo* insertarOrdenado(Nodo*& l, sCarta v){
-    Nodo* nuevo = new Nodo();
-    nuevo->info = v;
-    nuevo->sgt = NULL;
-    Nodo* ant = NULL;
-    Nodo* actual = l;
+    while (aux != NULL && aux->dato.numRef != cartaBuscada.numRef) {
+        antecesor = aux;
+        aux = aux->siguiente;
+    }
 
-    while( actual!=NULL && actual->info.numRef <v.numRef ) {
-        ant = actual;
-        actual = actual->sgt;
+    if (aux != NULL) {
+        if (aux == punteroListaCarta) {
+            punteroListaCarta = aux->siguiente;
+        } else {
+            antecesor->siguiente = aux->siguiente;
+        }
+
+        delete aux;
+        return true;
+    } else {
+        return false;
     }
-    if( ant==NULL ){
-        l = nuevo;
-    }
-    else{
-        ant->sgt = nuevo;
-        nuevo->sgt = actual;
-    }
- return nuevo;
 }
-//Version 2 Eliminando el nodo luego de mostrar
-/*void mostrar(Nodo* & l) {
- while( l )
- cout << pop(l) << endl;
- return;
-}*/
+
+Nodo* buscarInsertarCarta(Nodo*& punteroListaCarta, sCarta cartaBuscada) {
+    Nodo* aux = punteroListaCarta, *antecesor;
+
+    while (aux != NULL && !(aux->dato.numRef < cartaBuscada.numRef)) {
+        antecesor = aux;
+        aux = aux->siguiente;
+    }
+
+    if (aux != NULL && aux->dato.numRef == cartaBuscada.numRef) {
+        return aux;
+    } else {
+        Nodo* nuevo = new Nodo;
+        nuevo->dato = cartaBuscada;
+        nuevo->siguiente = aux;
+
+        if (aux != punteroListaCarta) {
+            antecesor->siguiente = nuevo;
+        } else {
+            punteroListaCarta = nuevo;
+        }
+
+        return nuevo;
+    }
+}
+
+
+
