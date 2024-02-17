@@ -40,7 +40,7 @@ bool levSumaAcum(sCarta, Nodo*[], short, Nodo*&, Nodo*&);
 void levAvanza(Nodo*[], short, short);
 bool levAvanzaFin(Nodo*[], short&, short, int, Nodo*);
 void levanta(int, Nodo*&, sCarta[], Nodo*&);
-
+void leerMazoSec(Nodo*);
 //void ordenarPorBurbuja(sCarta[], short);
 
 int main(){
@@ -77,7 +77,7 @@ int main(){
     while (juegoTermina != 1){
         cout << "La mesa tiene " << endl;
         mostrarListado(inicListaCarta);
-
+        leerMazoSec(punteroMazoSecJ1);
         cout << "Jugador 1)"<< endl;
         Interfaz(punteroMazoSecJ1, CJ1, inicListaCarta);
         cout << endl<<"Pase computadora a Jugador 2" << endl;
@@ -86,6 +86,7 @@ int main(){
 
         cout << "La mesa tiene " << endl;
         mostrarListado(inicListaCarta);
+        leerMazoSec(punteroMazoSecJ2);
         cout << "Jugador 2)"<< endl;
         Interfaz(punteroMazoSecJ2, CJ2, inicListaCarta);
         cout << endl<<"Pase computadora a Jugador 1" << endl;
@@ -143,6 +144,18 @@ short eligeCarta(sMazo mazo[][10],short& posicCarta,short& filaCarta, short& col
 
     mazo[filaCarta][colCarta].usado = true;
     return mazo[filaCarta][colCarta].carta;
+}
+
+void leerMazoSec(Nodo* mazoSec){
+    short i = 0;
+    while (mazoSec != NULL){
+        cout << i <<") "<< mazoSec->dato.numRef << " ";
+        cout << mazoSec->dato.valor << " " ;
+        cout << mazoSec->dato.palo << endl;
+        mazoSec = mazoSec->siguiente;
+        i++;
+    }
+
 }
 
 void printMazo(sMazo mazo[][10]){
