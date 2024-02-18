@@ -313,29 +313,37 @@ Nodo* buscarMejorCarta(Nodo* inicListaCarta, sCarta cartaBuscada) {
 
     return aux;
 }
-
 bool eliminarCarta(Nodo*& inicListaCarta, sCarta cartaBuscada) {
     Nodo* aux, *antecesor;
     aux = inicListaCarta;
+    antecesor = aux;
 
-    while (aux->siguiente != inicListaCarta && aux->dato.numRef != cartaBuscada.numRef) {
+    while (aux->siguiente != inicListaCarta && aux->dato.numRef != cartaBuscada.numRef && strcmp(aux->dato.palo, cartaBuscada.palo) != 0) {
         antecesor = aux;
         aux = aux->siguiente;
     }
 
-    if (aux->siguiente != inicListaCarta) {
-        if (aux == inicListaCarta) {
-            inicListaCarta = aux->siguiente;
-        } else {
-            antecesor->siguiente = aux->siguiente;
-        }
+    if ( aux->dato.numRef != cartaBuscada.numRef && strcmp(aux->dato.palo, cartaBuscada.palo) != 0){
+        cout << endl << "ERROR CARTA A ELIMINAR NO ENCONTRADA"<< endl;
+        return false;
+    }
 
+    if (aux == inicListaCarta) {
+            while (antecesor->siguiente != inicListaCarta){
+                antecesor = antecesor->siguiente;
+            }
+            antecesor ->siguiente = aux->siguiente;
+            inicListaCarta = aux->siguiente;
         delete aux;
         return true;
     } else {
-        return false;
+        antecesor ->siguiente = aux->siguiente;
+        inicListaCarta = aux->siguiente;
+        delete aux;
+        return true;
     }
 }
+
 
 Nodo* buscarInsertarCarta(Nodo*& inicListaCarta, sCarta cartaBuscada) {
     Nodo* aux = inicListaCarta, *antecesor;
