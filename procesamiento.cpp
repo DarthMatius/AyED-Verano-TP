@@ -125,5 +125,8 @@ void puntaje(Nodo* mazoJ1, Nodo* mazoJ2, short puntos1, short puntos2) { // punt
     {
         puntos2++;
     }
-
+    cout << "El jugador 1 obtuvo " << puntos1 << " puntos" << endl;
+    cout << "El jugador 2 obtuvo " << puntos2 << " puntos" << endl;
+    
+    return;
 }
