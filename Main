@@ -1,6 +1,3 @@
-
-
-
 #include <iostream>
 #include <time.h>
 #include <stdlib.h>
@@ -72,31 +69,35 @@ int main(){
   mostrarCJ(CJ2);
     printMazo(mazo);
     cout << endl << endl << endl << endl << "INICIO DE PARTIDA" << endl;
-    InicioPartida(mazo, CJ1, CJ2, posicCarta, filaCarta, colCarta, inicListaCarta);
-
+   
     cout << endl <<"¿Empezar el Juego?" << endl;
     system("pause");
     system("cls");
+	 InicioPartida(mazo, CJ1, CJ2, posicCarta, filaCarta, colCarta, inicListaCarta);
 
     while (juegoTermina != 1){
-       for(int i=0;i<3;i++){
-       	
-        cout << "La mesa tiene " << endl;
-        mostrarListado(inicListaCarta);
-        cout << "Jugador 1)"<< endl;
-        Interfaz(punteroMazoSecJ1, CJ1, inicListaCarta,band2);
-        cout << endl<<"Pase computadora a Jugador 2" << endl;
-        system("pause");
-        system("cls");
+    	
+    	
+      		 for(int i=0;i<3;i++){
+       				cout << "La mesa tiene " << endl;
+					mostrarListado(inicListaCarta);
+					cout << "Jugador 1)" << endl;
+					Interfaz(punteroMazoSecJ1, CJ1, inicListaCarta, band2);
+					cout << endl << "Pase computadora a Jugador 2" << endl;
+					system("pause");
+					system("cls");
 
-        cout << "La mesa tiene " << endl;
-        mostrarListado(inicListaCarta);
-        cout << "Jugador 2)"<< endl;
-        Interfaz(punteroMazoSecJ2, CJ2, inicListaCarta,band2);
-        cout << endl<<"Pase computadora a Jugador 1" << endl;
-        system("pause");
-        system("cls");
-}
+					cout << "La mesa tiene " << endl;
+					mostrarListado(inicListaCarta);
+					cout << "Jugador 2)" << endl;
+					Interfaz(punteroMazoSecJ2, CJ2, inicListaCarta, band2);// por ahora hice esto , termina cuanod la mesa qyede vacua
+					cout << endl << "Pase computadora a Jugador 1" << endl;
+					system("pause");
+					system("cls");
+					
+      					
+						}
+				repartir(mazo,CJ1,CJ2,posicCarta,filaCarta,colCarta);
        
     }
     return 0;
@@ -237,7 +238,7 @@ void InicioPartida(sMazo mazo[][10],sCarta c1[], sCarta c2[],short&posicCarta,sh
     CartaActual.valor = colCarta+1;
     insertarEnListaCir(inicListaCarta,CartaActual);
     }//primera parte volcar datos del mazo en nodos y agregarlos a la lista
-    repartir(mazo,c1,c2,posicCarta,filaCarta,colCarta);//segunda parte utilizar la funcion repartir
+    //repartir(mazo,c1,c2,posicCarta,filaCarta,colCarta);
 }
 
 void insertarEnListaCir(Nodo *&inicio, sCarta CartaActual){//insertaOrdenado
@@ -553,14 +554,22 @@ void levanta(int numCartaMano, Nodo*& mazoSecundario, sCarta mazoJugador[], Nodo
 
     p[i] = mazoMesa;
     while(band1 && band2){
+    	
         cout << "entro al while";
-        cout << endl << i << " " << p[i]->dato.valor << endl;
-        levAvanza(p, i, i);
-        cout << "Curr"<< endl << i << " " << p[i]->dato.valor << endl;
-        if (i>0){
-            cout << endl <<"Ant" <<i-1 << " " << p[i-1]->dato.valor << endl;
-        }
-        band1 = levSumaAcum(mazoJugador[numCartaMano], p, i, mazoSecundario, mazoMesa);
+         if (i >= tamanioMesa(mazoMesa)){
+		 cout << endl << "no hay lugar" << endl;
+		 band1 = false;
+		 }else {
+		 	  levAvanza(p, i, i);
+		 	   cout << endl << i << " " << p[i]->dato.valor << endl;
+      
+      			  cout << "Curr"<< endl << i << " " << p[i]->dato.valor << endl;
+     			   if (i>0){
+       					     cout << endl <<"Ant" <<i-1 << " " << p[i-1]->dato.valor << endl;
+      					  }
+      			  band1 = levSumaAcum(mazoJugador[numCartaMano], p, i, mazoSecundario, mazoMesa);
+		 }
+       
         if (band1 && p[i]->siguiente != mazoMesa){
             cout << endl<< "entro al primer if";
             p[i] = p[i]->siguiente;
@@ -584,8 +593,5 @@ void levanta(int numCartaMano, Nodo*& mazoSecundario, sCarta mazoJugador[], Nodo
         }
     cout << endl;
 }}
-
-
-
 
 
