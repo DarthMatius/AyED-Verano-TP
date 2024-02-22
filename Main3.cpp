@@ -35,6 +35,7 @@ short eligeCarta(sMazo[][10],short&,short&,short&);
 void inicCJ(sCarta[]);
 void definePalo(short, str6);
 void mostrarCJ(sCarta[]);
+sCarta pop(Nodo*&);
 void repartir(sMazo[][10],sCarta[],sCarta[],short&,short&,short&);
 void InicioPartida(sMazo[][10], short&, short&, short&, Nodo*& );
 void insertarEnListaCir(Nodo*&,sCarta);
@@ -50,11 +51,11 @@ void leerMazoSec(Nodo*);
 void ordenarPorBurbuja(sCarta[], short);
 void casoB(Nodo*&,int , sCarta[]);
 void mazovacio(Nodo*&, sCarta[]);
-void puntaje(Nodo*, Nodo*, short[], short);
-void totalCartas(Nodo*, short&);
-void sieteDeOro(Nodo*, bool&);
-void oros(Nodo*, short&);
-void setenta(Nodo*, short&);
+void puntaje(Nodo*&, Nodo*&, short[]);
+short elijeMayor(short, short);
+void inicPuntCJ(sPuntCJ[]);
+void puntosMazo(Nodo*&,sPuntCJ&);
+
 
 int main(){
     bool  band2 ;
@@ -124,8 +125,8 @@ int main(){
         cout <<endl << "2) " << endl;
         leerMazoSec(punteroMazoSecJ2);
         cout << endl << "Puntaje" << endl;
-        puntaje(punteroMazoSecJ1, punteroMazoSecJ2, puntos, 2);
-
+        puntaje(punteroMazoSecJ1, punteroMazoSecJ2, puntos);
+        cout << endl << punteroMazoSecJ1;
         system("pause");
 
         if (puntos[0] >= 15) {
@@ -135,7 +136,7 @@ int main(){
             cout << "¡El Jugador 2 ha ganado la partida con " << puntos[1] << " puntos!" << endl;
             juegoTermina = 1;  // Finalizar el juego
         }
-
+        system("cls");
     }
     return 0;
 };
@@ -429,11 +430,13 @@ void Interfaz(Nodo*& mazoSecundario, sCarta CJ[], Nodo*& inicListaCarta, bool ba
         posCarta -= 1;
         if ( 0> posCarta || posCarta > 2) {
             cout << "El jugador puede tener hasta tres cartas, no existe esa posicion"<< endl;
+        }else if (CJ[posCarta].numRef == 0){
+            cout << "Carta ya usada, elija de vuelta"<< endl;
         }
-    } while (0> posCarta || posCarta > 2);
+    } while (0> posCarta || posCarta > 2 || CJ[posCarta].numRef == 0);
     system("cls");
     mostrarListado(inicListaCarta);
-    cout<< "elegiste la carta " << CJ[posCarta].numRef << endl;
+    cout<< "elegiste la carta " << CJ[posCarta].numRef << " " <<CJ[posCarta].palo << endl;
     cout << "¿Qué operacion desea realizar con esta carta?" <<endl;
     cout << "Si desea levantar inserte A o si desea tirar la carta inserte B" << endl;
     cin >> accion;
@@ -477,6 +480,14 @@ void insertaListaDesord(sCarta datoNuevo, Nodo*&mazoSec){
     mazoSec = nuevo;
 }
 
+sCarta pop(Nodo*& pLista){
+    Nodo *aux = pLista;
+    sCarta info = aux->dato;
+    pLista = aux->siguiente;
+    delete aux;
+    return info;
+}
+
 void mazovacio (Nodo*& inicListaCarta, sCarta CJ[]){
     int posCarta;
 
@@ -510,9 +521,13 @@ int tamanioMesa(Nodo* mesa){
 }
 //--------------------INICIO COMBINATORIA (Levanta de Mesa)-----------------------
 bool levSumaAcum(sCarta carJug, Nodo*p[], short i, Nodo*&mazoSec, Nodo*& mazoMesa){
+    cout << "entro a suma" << endl;
     short acum = carJug.valor,
           j;
+
+    cout << carJug.valor << " " << acum << endl;
     for (j = 0 ; j <= i; j++){
+        cout << p[j]->dato.valor << " " << acum <<endl;
         acum += p[j]->dato.valor;
     }
 
@@ -553,7 +568,7 @@ void levAvanza(Nodo*p[] , short curr, short i){
 
 bool levAvanzaFin(Nodo*p[], short& i, short j, int tamMesa, Nodo*mazoMesa){
     cout << endl << "Entra a LevAvanzaFin" << endl;
-    if (i == tamMesa-1){ //si hay mas punteros que cartas en mesa, terminar proceso
+    if (i >= tamMesa-1){ //si hay mas punteros que cartas en mesa, terminar proceso
         cout << endl << "Entra a no hay lugar" << endl;
         system("pause");
       //    cout << "Tu carta no puede levantar nada." << endl;
@@ -562,17 +577,21 @@ bool levAvanzaFin(Nodo*p[], short& i, short j, int tamMesa, Nodo*mazoMesa){
     }
     else if (p[j-1]->siguiente != p[j]) { //si el puntero anterior puede avanzar, que avance
         cout << endl << "Entra a puede avanzar" << endl;
+        cout << p[j-1]->dato.valor << endl;
         p[j-1] = p[j-1]->siguiente;
         return false;
     }
     else {// Si el puntero NO puede avanzar...
         cout << endl << "Entra a no puede avanzar" << endl;
+
         if (p[j-1] != p[0]){ //Y no es el cero, se repite este modulo (recursivo)
             cout << endl << "Entra a repite Modulo" << endl;
             levAvanzaFin(p, i, j-1 , tamMesa, mazoMesa);
             return false;
         }
+
         else{ // Si es el cero, entonces se posicionan todos los punteros al comienzo y se agrega un puntero
+
             cout << endl << "Entra a p[0] no avanza" << endl;
             cout << endl<< j << " " << p[0]->dato.valor << " "<<p[j]->dato.valor << endl;
             p[0] = mazoMesa;
@@ -585,7 +604,6 @@ bool levAvanzaFin(Nodo*p[], short& i, short j, int tamMesa, Nodo*mazoMesa){
             cout <<endl <<"PASO EL WHILE" << endl;
             p[j]=p[j-1]-> siguiente;
             i++;
-            cout <<endl <<"SOLO QUEDA RETURN" << endl;
             return false;
         }
     }
@@ -608,6 +626,7 @@ void levanta(int numCartaMano, Nodo*& mazoSecundario, sCarta mazoJugador[], Nodo
          if (i >= tamanioMesa(mazoMesa)){
 		 cout << endl << "no hay lugar" << endl;
 		 band1 = false;
+		 band2 = false;
 		 }else {
 		 	  levAvanza(p, i, i);
 		 	   cout << endl << i << " " << p[i]->dato.valor << endl;
@@ -646,80 +665,39 @@ void levanta(int numCartaMano, Nodo*& mazoSecundario, sCarta mazoJugador[], Nodo
 //-----------------------------FIN COMBINATORIA-----------------------------------
 
 //------------------------------PROCESAMIENTO-------------------------------------
-void setenta(Nodo* mazoSec, short &r) {
-    if(mazoSec==NULL)
-    {
+void puntosMazo(Nodo*&mazoSec, sPuntCJ &puntCJ) { //junte todos los contadores en uno solo, asi recorremos la lista una sola vez
+    if(mazoSec==NULL){
         return;
     }
-    Nodo* aux = mazoSec;
-    while(aux->siguiente!=NULL){
-        if(aux->dato.valor==7)
-        {
-            r++;
-        }
-        aux=aux->siguiente;
-    }
-    if(aux->dato.valor==7)
-    {
-        r++;
-    }
-    return;
-}
+    sCarta dato;
 
-void oros(Nodo* mazoSec, short &k) {
-    if(mazoSec==NULL)
-    {
-        return;
-    }
-    Nodo* aux = mazoSec;
-    while(aux->siguiente!=NULL){
-        if(strcmp(aux->dato.palo,"oro")==0)
-        {
-            k++;
-        }
-        aux=aux->siguiente;
-    }
-    if(strcmp(aux->dato.palo,"oro")==0)
-    {
-        k++;
-    }
-    return;
-}
+    while(mazoSec->siguiente!=NULL){
 
-void sieteDeOro(Nodo* mazoSec, bool &SO) {
-    if(mazoSec==NULL)
-    {
-        return;
-    }
-    Nodo* aux = mazoSec;
-    SO=false;
-    while(aux->siguiente!=NULL){
-        if(aux->dato.valor==7 && (strcmp(aux->dato.palo,"oro")==0))
-        {
-            SO=true;
-            return;
-        }
-        aux=aux->siguiente;
-    }
-    if(aux->dato.valor==7 && (strcmp(aux->dato.palo,"oro")==0))
-    {
-        SO=true;
-        return;
-    }
-    return;
-}
+        dato = pop(mazoSec);
 
-void totalCartas(Nodo* mazoSec, short &c) {
-    if(mazoSec==NULL)
-    {
-        return;
+        if(dato.valor==7){
+            puntCJ.cantSetentas++;
+        }
+        if(strcmp(dato.palo,"oro")==0){
+            puntCJ.cantOros++;
+        }
+        if(dato.valor==7 && (strcmp(dato.palo,"oro")==0)){
+            puntCJ.sO=true;
+        }
+
+        puntCJ.totCartas++;
     }
-    Nodo* aux = mazoSec;
-    while(aux->siguiente!=NULL){
-        c++;
-        aux=aux->siguiente;
+    dato = pop(mazoSec);
+    if(dato.valor==7){
+        puntCJ.cantSetentas++;
     }
-    c++;
+    if(strcmp(dato.palo,"oro")==0){
+        puntCJ.cantOros++;
+    }
+    if(dato.valor==7 && (strcmp(dato.palo,"oro")==0)){
+        puntCJ.sO=true;
+    }
+    puntCJ.totCartas++;
 
     return;
 }
@@ -744,42 +722,49 @@ short elijeMayor(short v1, short v2){ // 4 si son iguales, 0 si v1 es mayor, 1 s
 
 }
 
-void puntaje(Nodo* mazoJ1, Nodo* mazoJ2, short puntos[], short cantJugs) { // puntos 1 y 2 son los contadores de escobas
-    Nodo* mazo[2] = {mazoJ1, mazoJ2};
+void puntaje(Nodo*& mazoJ1, Nodo*& mazoJ2, short puntos[]) { // puntos 1 y 2 son los contadores de escobas
     short aux;
     sPuntCJ puntCJ[2];
 
     inicPuntCJ(puntCJ);
 
-    for (short i = 0; i < cantJugs; i++){
-        totalCartas(mazo[i],puntCJ[i].totCartas);
-        sieteDeOro(mazo[i],puntCJ[i].sO);
-        oros(mazo[i],puntCJ[i].cantOros);
-        setenta(mazo[i],puntCJ[i].cantSetentas);
-    }
+    puntosMazo(mazoJ1,puntCJ[0]);
+    puntosMazo(mazoJ2,puntCJ[1]);
+
     aux = elijeMayor(puntCJ[0].totCartas, puntCJ[1].totCartas);
     if (aux < 3){
         puntos[aux]++;
+        cout << "¡Jugador " << aux+1 << "Gana 1 punto por mayoria de cartas!" << endl;
+    }else {
+        cout << "Ambos Jugadores tienen la misma cantidad de cartas, ¡Ninguno gana Puntos!"<< endl;
     }
 
     aux = elijeMayor(puntCJ[0].cantOros, puntCJ[1].cantOros);
     if (aux < 3){
         puntos[aux]++;
+        cout << "Jugador " << aux+1 << " Gana 1 punto por mayoria de Oros!" << endl;
+    }else {
+        cout << "Ambos Jugadores tienen la misma cantidad de Oros, ¡Ninguno gana Puntos!"<< endl;
     }
 
     aux = elijeMayor(puntCJ[0].cantSetentas, puntCJ[1].cantSetentas);
     if (aux < 3){
         puntos[aux]++;
+        cout << "Jugador " << aux+1 << "Gana 1 punto por mayoria de Sietes!" << endl;
+    } else {
+        cout << "Ambos Jugadores tienen la misma cantidad de Sietes, ¡Ninguno gana Puntos!"<< endl;
     }
 
     if(puntCJ[0].sO){
         puntos[0]++;
+        cout << "Jugador 1 Gana 1 punto por tener el Siete de Oro!" << endl;
     }
     if(puntCJ[1].sO){
         puntos[1]++;
+        cout << "Jugador 2 Gana 1 punto por tener el Siete de Oro!" << endl;
     }
 
-    cout << "El jugador 1 obtuvo " << puntos[0] << " puntos" << endl;
+    cout <<endl<< "El jugador 1 obtuvo " << puntos[0] << " puntos" << endl;
     cout << "El jugador 2 obtuvo " << puntos[1] << " puntos" << endl;
 
     return;
