@@ -126,7 +126,6 @@ int main(){
         leerMazoSec(punteroMazoSecJ2);
         cout << endl << "Puntaje" << endl;
         puntaje(punteroMazoSecJ1, punteroMazoSecJ2, puntos);
-        cout << endl << punteroMazoSecJ1;
         system("pause");
 
         if (puntos[0] >= 15) {
@@ -734,25 +733,25 @@ void puntaje(Nodo*& mazoJ1, Nodo*& mazoJ2, short puntos[]) { // puntos 1 y 2 son
     aux = elijeMayor(puntCJ[0].totCartas, puntCJ[1].totCartas);
     if (aux < 3){
         puntos[aux]++;
-        cout << "¡Jugador " << aux+1 << "Gana 1 punto por mayoria de cartas!" << endl;
+        cout << "Jugador " << aux+1 << " Gana 1 punto por mayoria de cartas!" << endl;
     }else {
-        cout << "Ambos Jugadores tienen la misma cantidad de cartas, ¡Ninguno gana Puntos!"<< endl;
+        cout << "Ambos Jugadores tienen la misma cantidad de cartas, Ninguno gana Puntos!"<< endl;
     }
 
     aux = elijeMayor(puntCJ[0].cantOros, puntCJ[1].cantOros);
     if (aux < 3){
         puntos[aux]++;
-        cout << "Jugador " << aux+1 << " Gana 1 punto por mayoria de Oros!" << endl;
+        cout << "Jugador " << aux+1 << "  Gana 1 punto por mayoria de Oros!" << endl;
     }else {
-        cout << "Ambos Jugadores tienen la misma cantidad de Oros, ¡Ninguno gana Puntos!"<< endl;
+        cout << "Ambos Jugadores tienen la misma cantidad de Oros, Ninguno gana Puntos!"<< endl;
     }
 
     aux = elijeMayor(puntCJ[0].cantSetentas, puntCJ[1].cantSetentas);
     if (aux < 3){
         puntos[aux]++;
-        cout << "Jugador " << aux+1 << "Gana 1 punto por mayoria de Sietes!" << endl;
+        cout << "Jugador " << aux+1 << " Gana 1 punto por mayoria de Sietes!" << endl;
     } else {
-        cout << "Ambos Jugadores tienen la misma cantidad de Sietes, ¡Ninguno gana Puntos!"<< endl;
+        cout << "Ambos Jugadores tienen la misma cantidad de Sietes, Ninguno gana Puntos!"<< endl;
     }
 
     if(puntCJ[0].sO){
