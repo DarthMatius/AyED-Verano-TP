@@ -1,8 +1,3 @@
-IMPORTANTE: 1) agregar una funcion que borre el mazo secundario de cada jugador asi no contamos las mismas cartas una vez llegue la 2da ronda
-            2) preguntar sobre el total de cartas, si se debe tomar en cuenta todas las rondas jugadas, o solo la ultima
-            3) si se deben tomar en cuenta todas las cartaas, agregar un contador de cuantas cartas tiene cada jugador en su mazo secundario antes de borrar
-            
-
 Main3 y Main4 20/02:
 
 Al main3 le agregue el contador de escobas si la mesa queda vacia, agregando dos funciones y dos variables como contadores, y al main4 le agregue lo que seria del contador de escobas del main3, para que sume en el total de puntos1 y puntos2 para tener los puntos totales del jugador.
