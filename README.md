@@ -11,7 +11,7 @@ junte ambos procesamiento y todo el resto en el main 3. Hice unos cambios en la 
 
 MAIN 2 24/02
 
-ES LA VERSION FINAL, es decir, que en cuanto a lo funcional ya esta andando perfectamente, solo falta agregar la posibilidad de 1 jugador mas, y algunos retoques esteticos
+ES LA VERSION FINAL, si quieren hacer retoques esteticos haganlos, pero en cuanto a lo funcional me pareceria que esta bien asi
 
 
 
