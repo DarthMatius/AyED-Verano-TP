@@ -9,7 +9,7 @@ Main3 21/02 (Mateo)
 
 junte ambos procesamiento y todo el resto en el main 3. Hice unos cambios en la funcion "puntaje" para que no repitiera mucho codigo, basicamente cree un struct con todos los tipos de puntajes e hice un vector del mismo, cargue todos los datos con un for, y luego los compare y sume los puntos (tambien transforme a los puntajes en un vector para hacer acceso directo). Si quieren cambiarlo haganlo, solo copien la version de "puntajes" en el archivo "procesamiento.cpp" y listo. Faltaria agregar una funcion que borre el mazo secundario de cada jugador asi no contamos las mismas cartas una vez llegue la 2da ronda
 
-MAIN 2 24/02
+MAIN 3 24/02
 
 ES LA VERSION FINAL, si quieren hacer retoques esteticos haganlos, pero en cuanto a lo funcional me pareceria que esta bien asi
 
