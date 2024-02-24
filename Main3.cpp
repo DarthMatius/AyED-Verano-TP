@@ -25,19 +25,22 @@ struct sPuntCJ{
           cantSetentas;
     bool sO;
 };
+struct sVecCJ{
+    sCarta cartasCJ[3];
+};
 
 
 
 //PROTOTIPOS
 void inicMazo(sMazo[][10]);
 void printMazo(sMazo[][10]);
-short eligeCarta(sMazo[][10],short&,short&,short&);
+short eligeCarta(sMazo[][10],short&,short&);
 void inicCJ(sCarta[]);
 void definePalo(short, str6);
 void mostrarCJ(sCarta[]);
 sCarta pop(Nodo*&);
-void repartir(sMazo[][10],sCarta[],sCarta[],short&,short&,short&);
-void InicioPartida(sMazo[][10], short&, short&, short&, Nodo*& );
+void repartir(sMazo[][10],sVecCJ[],short&,short&,short);
+void InicioPartida(sMazo[][10], short&, short&, Nodo*& );
 void insertarEnListaCir(Nodo*&,sCarta);
 void mostrarListado(Nodo *);
 void Interfaz(Nodo*&, sCarta[], Nodo*&,bool);
@@ -46,101 +49,104 @@ int tamanioMesa(Nodo*);
 bool levSumaAcum(sCarta, Nodo*[], short, Nodo*&, Nodo*&);
 void levAvanza(Nodo*[], short, short);
 bool levAvanzaFin(Nodo*[], short&, short, int,Nodo*);
-void levanta(int, Nodo*&, sCarta[], Nodo*&, bool&);
+void levanta(Nodo*&, sCarta, Nodo*&, bool&);
 void leerMazoSec(Nodo*);
 void ordenarPorBurbuja(sCarta[], short);
 void casoB(Nodo*&,int , sCarta[]);
 void mazovacio(Nodo*&, sCarta[]);
-void puntaje(Nodo*&, Nodo*&, short[]);
-short elijeMayor(short, short);
+void puntaje(Nodo*[], short, short[]);
+short elijeMayor(short, short, short);
 void inicPuntCJ(sPuntCJ[]);
 void puntosMazo(Nodo*&,sPuntCJ&);
+int cartasRestantesMazo(sMazo[][10]);
+void reinicMazo(sMazo[][10]);
+void turnoJug(Nodo*&, sCarta[], short[], short , Nodo*& , bool&);
 
 
 int main(){
-    bool  band2 ;
-    short posicCarta,
-          filaCarta,
-          colCarta,
-          puntos[2] = {0,0},
-          juegoTermina = 0;
-
-
-    Nodo*inicListaCarta = NULL;
-    Nodo*punteroMazoSecJ1 = NULL;
-    Nodo*punteroMazoSecJ2 = NULL;
-
-    sCarta CJ1[3]; //cartasjugador1
-    sCarta CJ2[3];//cartasjugador2
+    bool  band2 = false,
+          juegoTermina = false;
+    short filaCarta = 0,
+          colCarta = 0,
+          puntos[3] = {0,0,0},
+          cantJugs;
 
     sMazo mazo[4][10];
+    Nodo*inicListaCarta = NULL;
+    Nodo** punteroMazoSecJ = new Nodo*[cantJugs];
+    sVecCJ* vecCJ = new sVecCJ[cantJugs];
 
+    cout << "Bienvenidos, cuantos jugadores seran, 2 o 3? ";
+    cin >> cantJugs;
     inicMazo(mazo);
-    inicCJ(CJ1);
-    inicCJ(CJ2);
-    printMazo(mazo);
-    repartir(mazo,CJ1,CJ2,posicCarta,filaCarta,colCarta);
-    mostrarCJ(CJ1);
-    mostrarCJ(CJ2);
-    printMazo(mazo);
-    cout << endl << endl << endl << endl << "INICIO DE PARTIDA" << endl;
+    for (short i = 0; i < cantJugs; i++ ){
+        inicCJ(vecCJ[i].cartasCJ);
+        punteroMazoSecJ[i] = NULL;
+    }
+    repartir(mazo,vecCJ,filaCarta,colCarta, cantJugs);
 
-    cout << endl <<"¿Empezar el Juego?" << endl;
+    cout << endl <<"Empezar el Juego?" << endl;
     system("pause");
     system("cls");
-    InicioPartida(mazo, posicCarta, filaCarta, colCarta, inicListaCarta);
+    InicioPartida(mazo,filaCarta, colCarta, inicListaCarta);
+    cout << endl  <<"Se reparten 3 cartas a cada uno..." << endl;
+    cout << "Quedan "<< cartasRestantesMazo(mazo) << " cartas en el mazo" << endl;
 
-    while (juegoTermina != 1){
-
+    while (!juegoTermina){
         for(int i=0;i<3;i++){
-            if (tamanioMesa(inicListaCarta) == 0){
-                mazovacio(inicListaCarta, CJ1);
-                puntos[1]++; //sumo contador de escoba al jugador anterior
-            }else{
-                cout << "La mesa tiene " << endl;
-                mostrarListado(inicListaCarta);
-                cout << "Jugador 1)" << endl;
-                Interfaz(punteroMazoSecJ1, CJ1, inicListaCarta, band2);
+            for(int j = 0; j < cantJugs; j++){
+                turnoJug(inicListaCarta, vecCJ[j].cartasCJ, puntos, j, punteroMazoSecJ[j],band2);
             }
-            cout << endl << "Pase computadora a Jugador 2" << endl;
-            system("pause");
-            system("cls");
-
-            if (tamanioMesa(inicListaCarta) == 0){
-                mazovacio(inicListaCarta, CJ1);
-                puntos[0]++; // sumo contador de escoba al jugador anterior
-            }else{
-                cout << "La mesa tiene " << endl;
-                mostrarListado(inicListaCarta);
-                cout << "Jugador 2)" << endl;
-                Interfaz(punteroMazoSecJ2, CJ2, inicListaCarta, band2);
-            }
-            cout << endl << "Pase computadora a Jugador 1" << endl;
-            system("pause");
-            system("cls");
         }
-        repartir(mazo,CJ1,CJ2,posicCarta,filaCarta,colCarta);
-        cout << endl << "Mazo Secundario" << endl << "1) " << endl;
-        leerMazoSec(punteroMazoSecJ1);
-        cout <<endl << "2) " << endl;
-        leerMazoSec(punteroMazoSecJ2);
-        cout << endl << "Puntaje" << endl;
-        puntaje(punteroMazoSecJ1, punteroMazoSecJ2, puntos);
+
         system("pause");
-
-        if (puntos[0] >= 15) {
-            cout << "¡El Jugador 1 ha ganado la partida con " << puntos[0] << " puntos!" << endl;
-            juegoTermina = 1;  // Finalizar el juego
-        } else if (puntos[1] >= 15) {
-            cout << "¡El Jugador 2 ha ganado la partida con " << puntos[1] << " puntos!" << endl;
-            juegoTermina = 1;  // Finalizar el juego
-        }
         system("cls");
+        repartir(mazo,vecCJ,filaCarta,colCarta, cantJugs);
+        cout << "Se reparten 3 cartas a cada uno..." << endl;
+        cout << "Quedan "<< cartasRestantesMazo(mazo) << " cartas en el mazo" << endl;
+        cout << endl << "Mazo de Cartas Levantadas: ";
+        for (short i = 0; i < cantJugs; i++ ){
+            cout <<endl <<"Jugador " <<i+1 <<") " << endl;
+            leerMazoSec(punteroMazoSecJ[i]);
+        };
+        cout << endl << "Puntaje" << endl;
+        puntaje(punteroMazoSecJ, cantJugs, puntos);
+
+        for (short i = 0; i < cantJugs; i++ ){
+            if (puntos[i] >= 15) {
+                cout << "¡El Jugador "<< i+1 <<" ha ganado la partida con " << puntos[i] << " puntos!" << endl;
+                juegoTermina = true;
+            }
+        }
+        system("pause");
+        system("cls");
+
     }
     return 0;
-};
+}
 
 // ---------------------------------------------------------------------------------------
+void turnoJug(Nodo*& inicListaCarta, sCarta CJ[], short puntos[], short numJugador, Nodo*& puntMazoSec, bool&band2){
+
+    cout << endl << "Pase computadora a Jugador " << numJugador+1 << ")" << endl;
+    system("pause");
+    system("cls");
+    if (tamanioMesa(inicListaCarta) == 0){
+        mazovacio(inicListaCarta, CJ);
+    }else{
+        cout << "La mesa tiene " << endl;
+        mostrarListado(inicListaCarta);
+        cout << "Jugador " << numJugador+1 << ")" << endl;
+        Interfaz(puntMazoSec, CJ, inicListaCarta, band2);
+    }
+    if (tamanioMesa(inicListaCarta) == 0){
+        cout << "Hiciste una Escoba! Ganas 1 punto!" << endl;
+        puntos[numJugador]++;
+    }
+
+}
+
+
 void inicMazo(sMazo mazo[][10]){
     short i,
           j;
@@ -158,27 +164,53 @@ void inicMazo(sMazo mazo[][10]){
     };
 }
 
-short eligeCarta(sMazo mazo[][10],short& posicCarta,short& filaCarta, short& colCarta){
+int cartasRestantesMazo(sMazo mazo[][10]){
+    int cantRest = 0;
 
+    for (short i = 0; i < 4; i++){
+        for(short j = 0; j < 10; j++){
+            if (!(mazo[i][j].usado)){
+                cantRest++;
+            }
+        }
+    }
+    return cantRest;
+}
+
+void reinicMazo(sMazo mazo[][10]){
+
+    for (short i = 0; i < 4; i++){
+        for(short j = 0; j < 10; j++){
+            mazo[i][j].usado = false;
+        }
+    }
+}
+
+short eligeCarta(sMazo mazo[][10],short& filaCarta, short& colCarta){
+    short i = 0;
     srand(time(0));
-    posicCarta= rand()%30 + 1;
+    colCarta= rand()%10;//+1;
+    filaCarta= rand()%4;
 
-   colCarta= rand()%10+1;
-     filaCarta= rand()%4;
-   /* filaCarta =(posicCarta/10);
-    colCarta = posicCarta-(filaCarta*10);*/
-      while (mazo[filaCarta][colCarta].usado){
-        //colCarta++;
-         colCarta= rand()%10+1;
-        filaCarta= rand()%4;
-       ;
-        if (colCarta >= 10){
-            colCarta = 0;
-            //filaCarta++;
+    if (cartasRestantesMazo(mazo) <= 0){
+        cout << endl <<"El mazo se ha quedado sin cartas suficientes, reiniciando mazo..." <<endl;
+        reinicMazo(mazo);
+    }
+
+    while (mazo[filaCarta][colCarta].usado){
+        if (i <= 5){ //agregue esto para que Si a la quinta vez que hace random, no le sale un numero util, que saque el siguiente de la lista
+            colCarta = rand()%10;
             filaCarta= rand()%4;
+            i++;
+        }else{
+            colCarta++;
+            if (colCarta >= 10){
+                colCarta = 0;
+                filaCarta++; //rand()%4;
 
-            if (filaCarta >= 4){
-                filaCarta = 0;
+                if (filaCarta >= 4){
+                    filaCarta = 0;
+                }
             }
         }
     }
@@ -207,23 +239,18 @@ void printMazo(sMazo mazo[][10]){
     }
 }
 
-void repartir(sMazo mazo[][10],sCarta c1[], sCarta c2[],short&posicCarta,short& filaCarta, short& colCarta){
-  int i=0;
-  for(i; i<3 ; i++){
-        eligeCarta(mazo,posicCarta,filaCarta,colCarta);
-        c1[i].numRef= mazo[filaCarta][colCarta].carta;
-        definePalo(filaCarta, c1[i].palo);
-        c1[i].valor = colCarta+1;
+void repartir(sMazo mazo[][10],sVecCJ vecCJ[],short& filaCarta, short& colCarta, short cantJugs){
+    int i=0,
+        j;
 
-      eligeCarta(mazo,posicCarta,filaCarta,colCarta);
-      c2[i].numRef= mazo[filaCarta][colCarta].carta;
-      definePalo(filaCarta, c2[i].palo);
-      c2[i].valor = colCarta+1;
-
+    for (i; i <cantJugs; i++){
+        for(j = 0; j<3 ; j++){
+            eligeCarta(mazo,filaCarta,colCarta);
+            vecCJ[i].cartasCJ[j].numRef= mazo[filaCarta][colCarta].carta;
+            definePalo(filaCarta, vecCJ[i].cartasCJ[j].palo);
+            vecCJ[i].cartasCJ[j].valor = colCarta+1;
+        }
   }
-	ordenarPorBurbuja(c1,3);
-    ordenarPorBurbuja(c2,3);
-
 }
 
 void inicCJ(sCarta C[]){
@@ -239,7 +266,7 @@ void mostrarCJ(sCarta C[]){
   int i=0;
   for (i; i<3 ; i++){
     if (C[i].numRef != 0){
-            cout<< i+1 <<") "<<C[i].numRef<< " ";
+            cout<< i+1 <<") "<<C[i].numRef<< "(" << C[i].valor << ")" << " ";
             cout<<C[i].palo<< endl;
     }
   //	cout<<"valor"<<C[i].valor<< endl;
@@ -247,7 +274,7 @@ void mostrarCJ(sCarta C[]){
 }
 
 void leerMazoSec(Nodo* mazoSec){
-    short i = 0;
+    short i = 1;
     while (mazoSec != NULL){
         cout << i <<") "<< mazoSec->dato.numRef << " ";
         //cout <<mazoSec->dato.valor << " " ;
@@ -278,10 +305,10 @@ void definePalo(short palo, str6 paloCarta){ //Le das el numero de la FILA y la 
     }
 }
 
-void InicioPartida(sMazo mazo[][10],short&posicCarta,short& filaCarta, short& colCarta,Nodo*& inicListaCarta){
+void InicioPartida(sMazo mazo[][10],short& filaCarta, short& colCarta,Nodo*& inicListaCarta){
    sCarta CartaActual;
     for (int i=0; i<4 ; i++){
-    eligeCarta(mazo,posicCarta,filaCarta,colCarta);
+    eligeCarta(mazo,filaCarta,colCarta);
     CartaActual.numRef= mazo[filaCarta][colCarta].carta;
     definePalo(filaCarta, CartaActual.palo);
     CartaActual.valor = colCarta+1;
@@ -436,13 +463,13 @@ void Interfaz(Nodo*& mazoSecundario, sCarta CJ[], Nodo*& inicListaCarta, bool ba
     system("cls");
     mostrarListado(inicListaCarta);
     cout<< "elegiste la carta " << CJ[posCarta].numRef << " " <<CJ[posCarta].palo << endl;
-    cout << "¿Qué operacion desea realizar con esta carta?" <<endl;
+    cout << "Que operacion desea realizar con esta carta?" <<endl;
     cout << "Si desea levantar inserte A o si desea tirar la carta inserte B" << endl;
     cin >> accion;
     accion = toupper(accion);
     switch (accion){
         case 'A':
-            levanta(posCarta, mazoSecundario, CJ, inicListaCarta,band2);
+            levanta(mazoSecundario, CJ[posCarta], inicListaCarta,band2);
             if (!band2){
                 cout<< " la carta que elegiste no puede levantar nada por lo que queda tirada en la mesa"<< endl;
                 casoB(inicListaCarta,posCarta,CJ);
@@ -505,6 +532,7 @@ void mazovacio (Nodo*& inicListaCarta, sCarta CJ[]){
     casoB(inicListaCarta, posCarta, CJ);
 
 }
+
 int tamanioMesa(Nodo* mesa){
     if (mesa == NULL){
         return 0;
@@ -520,25 +548,26 @@ int tamanioMesa(Nodo* mesa){
 }
 //--------------------INICIO COMBINATORIA (Levanta de Mesa)-----------------------
 bool levSumaAcum(sCarta carJug, Nodo*p[], short i, Nodo*&mazoSec, Nodo*& mazoMesa){
-    cout << "entro a suma" << endl;
     short acum = carJug.valor,
           j;
-
-    cout << carJug.valor << " " << acum << endl;
     for (j = 0 ; j <= i; j++){
-        cout << p[j]->dato.valor << " " << acum <<endl;
         acum += p[j]->dato.valor;
     }
 
     if(acum == 15){
         insertaListaDesord(carJug, mazoSec);
         cout << "Carta/s de la mesa levantada/s: ";
-        for (j = 0 ; j <= i; j++){
-            cout << p[j]->dato.numRef << " " << p[j]->dato.palo << ", ";
+        j = 0; //lo pongo afuera del for para que quede bien esteticamente;
+        cout << p[j]->dato.numRef << " " << p[j]->dato.palo;
+        insertaListaDesord(p[j]->dato, mazoSec);
+        eliminarCarta(mazoMesa, p[j]->dato);
+        for (j = 1 ; j <= i; j++){
+            cout << ", "<<p[j]->dato.numRef << " " << p[j]->dato.palo;
             insertaListaDesord(p[j]->dato, mazoSec);
             eliminarCarta(mazoMesa, p[j]->dato);
-
         }
+        cout << endl;
+        system("pause");
         return false;
     }
     else {
@@ -561,46 +590,29 @@ void levAvanza(Nodo*p[] , short curr, short i){
     }
 }
 
-
-
-
-
 bool levAvanzaFin(Nodo*p[], short& i, short j, int tamMesa, Nodo*mazoMesa){
-    cout << endl << "Entra a LevAvanzaFin" << endl;
     if (i >= tamMesa-1){ //si hay mas punteros que cartas en mesa, terminar proceso
-        cout << endl << "Entra a no hay lugar" << endl;
-        system("pause");
       //    cout << "Tu carta no puede levantar nada." << endl;
        //   Interfaz( mazoSecundario, CJ[], Nodo*& inicListaCarta)
         return true;
     }
     else if (p[j-1]->siguiente != p[j]) { //si el puntero anterior puede avanzar, que avance
-        cout << endl << "Entra a puede avanzar" << endl;
-        cout << p[j-1]->dato.valor << endl;
         p[j-1] = p[j-1]->siguiente;
         return false;
     }
     else {// Si el puntero NO puede avanzar...
-        cout << endl << "Entra a no puede avanzar" << endl;
-
         if (p[j-1] != p[0]){ //Y no es el cero, se repite este modulo (recursivo)
-            cout << endl << "Entra a repite Modulo" << endl;
             levAvanzaFin(p, i, j-1 , tamMesa, mazoMesa);
             return false;
         }
 
         else{ // Si es el cero, entonces se posicionan todos los punteros al comienzo y se agrega un puntero
-
-            cout << endl << "Entra a p[0] no avanza" << endl;
-            cout << endl<< j << " " << p[0]->dato.valor << " "<<p[j]->dato.valor << endl;
             p[0] = mazoMesa;
             levAvanza(p, 0, i);
-            cout << endl<< j << " " << p[0]->dato.valor << " "<<p[j]->dato.valor << endl<< "PASO LEVAVANZA"<< endl;
             while (p[j]->siguiente != p[0]){
                 p[j] = p[j-1]->siguiente;
                 j++;
-            }
-            cout <<endl <<"PASO EL WHILE" << endl;
+            };
             p[j]=p[j-1]-> siguiente;
             i++;
             return false;
@@ -609,7 +621,7 @@ bool levAvanzaFin(Nodo*p[], short& i, short j, int tamMesa, Nodo*mazoMesa){
 }
 
 
-void levanta(int numCartaMano, Nodo*& mazoSecundario, sCarta mazoJugador[], Nodo*& mazoMesa,bool&band2 ){
+void levanta(Nodo*& mazoSecundario, sCarta carJug, Nodo*& mazoMesa, bool& band2 ){
     short i = 0;
     bool band1 = true;
          band2 = true;
@@ -620,45 +632,31 @@ void levanta(int numCartaMano, Nodo*& mazoSecundario, sCarta mazoJugador[], Nodo
 
     p[i] = mazoMesa;
     while(band1 && band2){
-
-        cout << "entro al while";
-         if (i >= tamanioMesa(mazoMesa)){
-		 cout << endl << "no hay lugar" << endl;
-		 band1 = false;
-		 band2 = false;
-		 }else {
-		 	  levAvanza(p, i, i);
-		 	   cout << endl << i << " " << p[i]->dato.valor << endl;
-
-      			  cout << "Curr"<< endl << i << " " << p[i]->dato.valor << endl;
-     			   if (i>0){
-       					     cout << endl <<"Ant" <<i-1 << " " << p[i-1]->dato.valor << endl;
-      					  }
-      			  band1 = levSumaAcum(mazoJugador[numCartaMano], p, i, mazoSecundario, mazoMesa);
-		 }
-
+        if (i >= tamanioMesa(mazoMesa)){
+		band1 = false;
+		band2 = false;
+		}else {
+           levAvanza(p, i, i);
+           if (i>0){
+           }
+           band1 = levSumaAcum(carJug, p, i, mazoSecundario, mazoMesa);
+		}
         if (band1 && p[i]->siguiente != mazoMesa){
-            cout << endl<< "entro al primer if";
             p[i] = p[i]->siguiente;
         }else if (band1){
             if (i == 0){
-                cout << endl<< "entro al SEGUNDO if i == 0";
                 p[0]=p[0]->siguiente;
                 i++;
                 p[i]= mazoMesa;
             }else{
                 if (levAvanzaFin(p, i, i, tamanioMesa(mazoMesa),mazoMesa)){
-                    cout << endl<< "NO ENCONTRO";
-                    system("pause");
                     band2 = false;
                 }
                 else{
-                     cout << endl<< "entro al TERCER if";
                      p[i]= mazoMesa;
                 }
             }
         }
-    cout << endl;
     }
 }
 //-----------------------------FIN COMBINATORIA-----------------------------------
@@ -702,7 +700,7 @@ void puntosMazo(Nodo*&mazoSec, sPuntCJ &puntCJ) { //junte todos los contadores e
 }
 
 void inicPuntCJ(sPuntCJ puntCJ[]){
-    for (short i = 0; i < 2; i++){
+    for (short i = 0; i < 3; i++){
         puntCJ[i].cantOros = 0;
         puntCJ[i].cantSetentas = 0;
         puntCJ[i].totCartas = 0;
@@ -710,27 +708,29 @@ void inicPuntCJ(sPuntCJ puntCJ[]){
     }
 }
 
-short elijeMayor(short v1, short v2){ // 4 si son iguales, 0 si v1 es mayor, 1 si v2 es mayor
-    if(v1 > v2){
+short elijeMayor(short v1, short v2, short v3){ // 4 si los dos mayores son iguales, 0 si v1 es mayor, 1 si v2 es mayor, 2 si v3 es mayor
+    if(v1 > v2 && v1 > v3){
         return 0;
-    }else if (v1 < v2){
+    }else if (v2 > v1 && v2 > v3){
         return 1;
+    }else if(v3 > v1 && v3 > v2){
+        return 2;
     }else{
         return 4;
     }
 
 }
 
-void puntaje(Nodo*& mazoJ1, Nodo*& mazoJ2, short puntos[]) { // puntos 1 y 2 son los contadores de escobas
-    short aux;
-    sPuntCJ puntCJ[2];
-
+void puntaje(Nodo* mazoJ[], short cantJugs, short puntos[]) { // puntos 1 y 2 son los contadores de escobas
+    short aux,
+          i;
+    sPuntCJ puntCJ[3];
     inicPuntCJ(puntCJ);
+    for (i = 0; i < cantJugs; i++){
+        puntosMazo(mazoJ[i],puntCJ[i]);
+    }
 
-    puntosMazo(mazoJ1,puntCJ[0]);
-    puntosMazo(mazoJ2,puntCJ[1]);
-
-    aux = elijeMayor(puntCJ[0].totCartas, puntCJ[1].totCartas);
+    aux = elijeMayor(puntCJ[0].totCartas, puntCJ[1].totCartas, puntCJ[2].totCartas);
     if (aux < 3){
         puntos[aux]++;
         cout << "Jugador " << aux+1 << " Gana 1 punto por mayoria de cartas!" << endl;
@@ -738,33 +738,32 @@ void puntaje(Nodo*& mazoJ1, Nodo*& mazoJ2, short puntos[]) { // puntos 1 y 2 son
         cout << "Ambos Jugadores tienen la misma cantidad de cartas, Ninguno gana Puntos!"<< endl;
     }
 
-    aux = elijeMayor(puntCJ[0].cantOros, puntCJ[1].cantOros);
+    aux = elijeMayor(puntCJ[0].cantOros, puntCJ[1].cantOros, puntCJ[2].cantOros);
     if (aux < 3){
         puntos[aux]++;
         cout << "Jugador " << aux+1 << "  Gana 1 punto por mayoria de Oros!" << endl;
     }else {
-        cout << "Ambos Jugadores tienen la misma cantidad de Oros, Ninguno gana Puntos!"<< endl;
+        cout << "Todos Jugadores tienen la misma cantidad de Oros, Ninguno gana Puntos!"<< endl;
     }
 
-    aux = elijeMayor(puntCJ[0].cantSetentas, puntCJ[1].cantSetentas);
+    aux = elijeMayor(puntCJ[0].cantSetentas, puntCJ[1].cantSetentas, puntCJ[2].cantSetentas);
     if (aux < 3){
         puntos[aux]++;
         cout << "Jugador " << aux+1 << " Gana 1 punto por mayoria de Sietes!" << endl;
     } else {
-        cout << "Ambos Jugadores tienen la misma cantidad de Sietes, Ninguno gana Puntos!"<< endl;
+        cout << "Todos los Jugadores tienen la misma cantidad de Sietes, Ninguno gana Puntos!"<< endl;
     }
 
-    if(puntCJ[0].sO){
-        puntos[0]++;
-        cout << "Jugador 1 Gana 1 punto por tener el Siete de Oro!" << endl;
+    for (i = 0; i < cantJugs; i++){
+        if(puntCJ[i].sO){
+            puntos[i]++;
+            cout << "Jugador " << i+1 << " Gana 1 punto por tener el Siete de Oro!" << endl;
+        }
     }
-    if(puntCJ[1].sO){
-        puntos[1]++;
-        cout << "Jugador 2 Gana 1 punto por tener el Siete de Oro!" << endl;
+    cout <<endl;
+    for (i = 0; i < cantJugs; i++){
+        cout << "El jugador " << i+1 <<" tiene " << puntos[i] << " puntos" << endl;
     }
-
-    cout <<endl<< "El jugador 1 obtuvo " << puntos[0] << " puntos" << endl;
-    cout << "El jugador 2 obtuvo " << puntos[1] << " puntos" << endl;
 
     return;
 }
