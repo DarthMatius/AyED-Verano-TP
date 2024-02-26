@@ -268,7 +268,7 @@ void mostrarCJ(sCarta C[]){
   int i=0;
   for (i; i<3 ; i++){
     if (C[i].numRef != 0){
-            cout<< i+1 <<") "<<C[i].numRef<< "(" << C[i].valor << ")" << " ";
+            cout<< i+1 <<") "<<C[i].numRef<< " ";
             cout<<C[i].palo<< endl;
     }
   }
