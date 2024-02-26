@@ -77,8 +77,12 @@ int main(){
     Nodo** punteroMazoSecJ = new Nodo*[cantJugs];
     sVecCJ* vecCJ = new sVecCJ[cantJugs];
 
-    cout << "Bienvenidos, cuantos jugadores seran, 2 o 3? ";
-    cin >> cantJugs;
+   
+    do {
+        cout << "Bienvenidos, cuantos jugadores seran, 2 o 3? ";
+        cin >> cantJugs;
+    } while (cantJugs != 2 && cantJugs != 3);
+	
     inicMazo(mazo);
     for (short i = 0; i < cantJugs; i++ ){
         inicCJ(vecCJ[i].cartasCJ);
