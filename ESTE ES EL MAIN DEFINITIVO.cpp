@@ -76,14 +76,14 @@ int main(){
 
     sMazo mazo[4][10];
     Nodo*inicListaCarta = NULL;
-    Nodo** punteroMazoSecJ = new Nodo*[cantJugs];
-    sVecCJ* vecCJ = new sVecCJ[cantJugs];
+  
 
     do {
         cout << "Bienvenidos, cuantos jugadores seran, 2 o 3? ";
         cin >> cantJugs;
     } while (cantJugs != 2 && cantJugs != 3);
-
+ 	 Nodo* punteroMazoSecJ[cantJugs] ;
+    sVecCJ vecCJ[cantJugs];
     inicMazo(mazo);
     for (short i = 0; i < cantJugs; i++ ){
         inicCJ(vecCJ[i].cartasCJ);
@@ -112,7 +112,7 @@ int main(){
         system("pause");
         system("cls");
         if(cartasRestantesMazo(mazo)<= 0){
-            cout << "Jugador " << ultimoLevan << " fue el ultimo en levantar! se queda con las cartas de la Mesa!"<< endl;
+            cout << "Jugador " << ultimoLevan+1 << " fue el ultimo en levantar! se queda con las cartas de la Mesa!"<< endl;
             levantaMesa(inicListaCarta, punteroMazoSecJ[ultimoLevan]);
             finMano(cantJugs, punteroMazoSecJ, puntos, juegoTermina);
             if (!juegoTermina){
